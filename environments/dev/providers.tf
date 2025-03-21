@@ -1,9 +1,9 @@
 terraform {
   required_version = ">= 1.11.0"
 
-required_providers {
+  required_providers {
     aws = {
-      source = "hashicorp/aws"
+      source  = "hashicorp/aws"
       version = "5.91.0"
     }
   }
@@ -12,3 +12,4 @@ required_providers {
 provider "aws" {
   region = var.aws_region
 }
+
