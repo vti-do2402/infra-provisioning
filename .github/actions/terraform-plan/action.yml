@@ -32,6 +32,7 @@ runs:
 
     - name: Terraform Plan (or Destroy Plan)
       run: |
+        cp ../../terraform.tfvars.example ./terraform.tfvars
         if [ "${{ inputs.is_destroy }}" == "true" ]; then
           terraform plan -destroy -out=tfplan -input=false -var-file=${{ inputs.var-file }}
         else
