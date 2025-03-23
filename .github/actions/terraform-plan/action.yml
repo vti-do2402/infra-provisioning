@@ -18,6 +18,10 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Copy terraform.tfvars
+      run: cp terraform.tfvars.example environments/${{ inputs.environment }}/terraform.tfvars
+      shell: bash
+
     - name: Terraform Init
       run: terraform init -upgrade
       shell: bash
