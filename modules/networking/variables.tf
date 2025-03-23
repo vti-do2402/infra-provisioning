@@ -23,11 +23,6 @@ variable "cluster_name" {
   type        = string
 }
 
-variable "admin_ip" {
-  description = "IP address to allow SSH access"
-  type        = string
-}
-
 variable "tags" {
   description = "Tags for the EC2 instance"
   type        = map(string)
