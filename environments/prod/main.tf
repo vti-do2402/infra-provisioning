@@ -25,20 +25,20 @@ module "ecr" {
   tags            = local.tags
 }
 
-module "eks" {
-  source = "../../modules/eks"
+# module "eks" {
+#   source = "../../modules/eks"
 
-  depends_on          = [module.bastion]
-  cluster_name        = "${local.prefix}-${var.cluster_name}"
-  cluster_version     = var.cluster_version
-  vpc_id              = module.networking.vpc_id
-  subnet_ids          = module.networking.private_subnet_ids
-  public_access_cidrs = [var.admin_ip, "${module.bastion.public_ip}/32"] # only allow kubelet access from bastion host or admin IP
-  security_group_ids  = [module.security.eks_security_group_id]
-  node_groups         = var.node_groups
+#   depends_on          = [module.bastion]
+#   cluster_name        = "${local.prefix}-${var.cluster_name}"
+#   cluster_version     = var.cluster_version
+#   vpc_id              = module.networking.vpc_id
+#   subnet_ids          = module.networking.private_subnet_ids
+#   public_access_cidrs = [var.admin_ip, "${module.bastion.public_ip}/32"] # only allow kubelet access from bastion host or admin IP
+#   security_group_ids  = [module.security.eks_security_group_id]
+#   node_groups         = var.node_groups
 
-  tags = local.tags
-}
+#   tags = local.tags
+# }
 
 module "bastion" {
   source            = "../../modules/compute"
