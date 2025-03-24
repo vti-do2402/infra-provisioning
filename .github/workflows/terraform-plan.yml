@@ -42,7 +42,7 @@ jobs:
         uses: ./.github/actions/terraform-plan
         with:
           environment: ${{ matrix.environment }}
-          is_destroy: "false"
+          is_destroy: false
           var-file: terraform.tfvars
 
       - name: Upload Artifact tfplan

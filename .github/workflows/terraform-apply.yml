@@ -38,11 +38,12 @@ jobs:
           fi
 
       - name: Run Terraform Plan
+        id: plan
         uses: ./.github/actions/terraform-plan
         with:
           environment: ${{ matrix.environment }}
-          is_destroy: "false"
+          is_destroy: false
 
       - name: Run Terraform Apply
         working-directory: environments/${{ matrix.environment }}
-        run: terraform apply --auto-approve -input=false tfplan
+        run: terraform apply --auto-approve -input=false ${{ steps.plan.outputs.plan-file }}

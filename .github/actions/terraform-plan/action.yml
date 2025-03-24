@@ -35,11 +35,18 @@ runs:
         terraform validate
 
     - name: Terraform Plan (or Destroy Plan)
+      if: ${{ inputs.is_destroy == 'false' }}
       shell: bash
       working-directory: environments/${{ inputs.environment }}
-      run: |
-        if [ "${{ inputs.is_destroy }}" = "true" ]; then
-          terraform plan -destroy -out=${{ inputs.output-file}} -input=false -var-file=${{ inputs.var-file }}
-        else
-          terraform plan -out=${{ inputs.output-file }} -input=false -var-file=${{ inputs.var-file }}
-        fi
+      run: terraform plan -out=${{ inputs.output-file }} -input=false -var-file=${{ inputs.var-file }}
+
+    - name: Terraform Plan (or Destroy Plan)
+      if: ${{ inputs.is_destroy == 'true' }}
+      shell: bash
+      working-directory: environments/${{ inputs.environment }}
+      run: terraform plan -destroy -out=${{ inputs.output-file}} -input=false -var-file=${{ inputs.var-file }}
+
+outputs:
+  plan-file:
+    description: "Name of the tfplan file"
+    value: ${{ inputs.output-file }}
