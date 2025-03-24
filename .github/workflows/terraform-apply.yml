@@ -45,4 +45,5 @@ jobs:
 
       - name: Run Terraform Apply
         run: terraform apply --auto-approve -input=false tfplan
+
         working-directory: environments/${{ matrix.environment }}

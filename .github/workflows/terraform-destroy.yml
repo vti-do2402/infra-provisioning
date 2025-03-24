@@ -50,6 +50,7 @@ jobs:
         with:
           environment: ${{ github.event.inputs.environment }}
           is_destroy: "true"
+          var-file: terraform.tfvars
 
       - name: Terraform Destroy
         if: ${{ github.event.inputs.is_destroy }}
