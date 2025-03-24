@@ -50,9 +50,8 @@ jobs:
         with:
           environment: ${{ github.event.inputs.environment }}
           is_destroy: "true"
-          var-file: terraform.tfvars
 
       - name: Terraform Destroy
         if: ${{ github.event.inputs.is_destroy }}
         working-directory: environments/${{ github.event.inputs.environment }}
-        run: terraform apply -auto-approve
+        run: terraform destroy -auto-approve tfplan

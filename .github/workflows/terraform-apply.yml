@@ -25,6 +25,24 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Fetch terraform.tfvars from GitHub Secrets
+        working-directory: environments/${{ matrix.environment }}
+        run: |
+          if [ "${{ matrix.environment }}" = "dev" ]; then
+            echo "${{ secrets.TFVARS_DEV }}" | base64 -d > terraform.tfvars
+          elif [ "${{ matrix.environment }}" = "prod" ]; then
+            echo "${{ secrets.TFVARS_PROD }}" | base64 -d > terraform.tfvars
+          else
+            echo "Unsupported environment: ${{ matrix.environment }}"
+            exit 1
+          fi
+
+      - name: Run Terraform Plan
+        uses: ./.github/actions/terraform-plan
+        with:
+          environment: ${{ matrix.environment }}
+          is_destroy: "false"
+
       - name: Run Terraform Apply
-        run: terraform apply --auto-approve -input=false
+        run: terraform apply --auto-approve -input=false tfplan
         working-directory: environments/${{ matrix.environment }}
