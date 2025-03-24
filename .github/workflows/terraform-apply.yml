@@ -6,8 +6,8 @@ on:
       - main
 
 jobs:
-  terraform-plan:
-    name: Terraform Plan
+  terraform-apply:
+    name: Terraform Apply
     runs-on: infra-ubuntu-24-04
 
     strategy:
@@ -44,6 +44,5 @@ jobs:
           is_destroy: "false"
 
       - name: Run Terraform Apply
-        run: terraform apply --auto-approve -input=false tfplan
-
         working-directory: environments/${{ matrix.environment }}
+        run: terraform apply --auto-approve -input=false tfplan

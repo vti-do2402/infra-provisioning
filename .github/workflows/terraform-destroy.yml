@@ -45,14 +45,14 @@ jobs:
             exit 1
           fi
 
-      - name: Run Terraform Plan
+      - name: Run Terraform Plan (Destroy)
         uses: ./.github/actions/terraform-plan
         with:
           environment: ${{ github.event.inputs.environment }}
           is_destroy: "true"
           var-file: terraform.tfvars
 
-      - name: Terraform Destroy
+      - name: Terraform Apply (Destroy)
         if: ${{ github.event.inputs.is_destroy }}
         working-directory: environments/${{ github.event.inputs.environment }}
-        run: terraform destroy -auto-approve tfplan
+        run: terraform apply -auto-approve tfplan
