@@ -14,6 +14,10 @@ inputs:
     description: "Terraform var file"
     required: false
     default: terraform.tfvars
+  output-file:
+    description: "Terraform plan output file"
+    required: false
+    default: tfplan
 
 runs:
   using: "composite"
@@ -35,7 +39,7 @@ runs:
       working-directory: environments/${{ inputs.environment }}
       run: |
         if [ "${{ inputs.is_destroy }}" = "true" ]; then
-          terraform plan -destroy -out=tfplan -input=false -var-file=${{ inputs.var-file }}
+          terraform plan -destroy -out=${{ inputs.output-file}} -input=false -var-file=${{ inputs.var-file }}
         else
-          terraform plan -out=tfplan -input=false -var-file=${{ inputs.var-file }}
+          terraform plan -out=${{ inputs.output-file }} -input=false -var-file=${{ inputs.var-file }}
         fi
