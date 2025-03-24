@@ -21,11 +21,17 @@ module "vpc" {
   name = "quentin-mock-project-small-vpc"
   cidr = "10.0.0.0/16"
 
-  azs                = [var.availability_zone]
-  public_subnets     = ["10.0.1.0/24"]
+  azs                     = [var.availability_zone]
+  public_subnets          = ["10.0.1.0/24"]
   map_public_ip_on_launch = true
-  enable_nat_gateway = false
-  single_nat_gateway = false
+  enable_nat_gateway      = false
+  single_nat_gateway      = false
+}
+
+module "key_pair" {
+  count    = length(var.key_pairs)
+  source   = "../modules/key-pair"
+  key_name = var.key_pairs[count.index]
 }
 
 # EC2 Instance Module

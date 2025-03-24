@@ -20,8 +20,10 @@ module "security" {
 }
 
 module "ecr" {
+  count           = length(var.microservices)
   source          = "../../modules/ecr"
-  repository_name = "${local.prefix}-repo"
+  repository_name = "${local.prefix}/${var.microservices[count.index]}"
+  
   tags            = local.tags
 }
 
@@ -47,7 +49,7 @@ module "bastion" {
   ami_id            = data.aws_ssm_parameter.ubuntu_24_04_ami.value
   subnet_id         = module.networking.public_subnet_ids[0]
   security_group_id = module.security.bastion_security_group_id
-  key_name          = var.bastion.key_name
+  key_name          = var.bastion.key_name # ensure this exists
   user_data         = file("${path.module}/scripts/bastion-startup.sh")
 
   tags = local.tags

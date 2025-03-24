@@ -13,9 +13,9 @@ output "public_subnets" {
   value       = module.networking.public_subnet_ids
 }
 
-output "ecr_reposotitory" {
+output "ecr_reposotitories" {
   description = "The URL of the repository"
-  value       = module.ecr.ecr_repository_url
+  value       = module.ecr[*].ecr_repository_url
 }
 
 output "cluster_endpoint" {
@@ -31,10 +31,9 @@ output "cluster_name" {
 output "bastion" {
   description = "Bastion host information"
   value = {
-    instance_id  = module.bastion.instance_id
-    public_ip    = module.bastion.public_ip
-    private_ip   = module.bastion.private_ip
-    ssh_key_path = module.bastion.ssh_key_path
+    instance_id = module.bastion.instance_id
+    public_ip   = module.bastion.public_ip
+    private_ip  = module.bastion.private_ip
   }
 }
 

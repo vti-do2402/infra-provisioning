@@ -17,3 +17,8 @@ variable "admin_ip" {
   description = "CIDR block for SSH access (e.g., 1.2.3.4/32)"
   type        = string
 }
+
+variable "key_pairs" {
+  type    = list(string)
+  default = []
+}
