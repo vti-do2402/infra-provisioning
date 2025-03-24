@@ -1,0 +1,36 @@
+name: Terraform Apply on Merge to branch main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform-plan:
+    name: Terraform Plan
+    runs-on: infra-ubuntu-24-04
+
+    strategy:
+      matrix:
+        environment: [dev] # Run plan for dev only, idealy this will be [dev, prod]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup AWS and Terraform
+        uses: ./.github/actions/setup
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Download Artifact tfplan
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan-${{ matrix.environment }}
+          path: environments/${{ matrix.environment }}/tfplan
+
+      - name: Run Terraform Apply
+        run: terraform apply --auto-approve tfplan
+        working-directory: environments/${{ matrix.environment }}

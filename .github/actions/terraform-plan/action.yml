@@ -7,8 +7,8 @@ inputs:
     required: false
     default: "false"
   environment:
-    required: true
     description: "Environment to deploy to (e.g., dev, prod)"
+    required: true
     default: dev
   var-file:
     description: "Terraform var file"
@@ -18,28 +18,24 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Copy terraform.tfvars
-      run: cp terraform.tfvars.example environments/${{ inputs.environment }}/terraform.tfvars
-      shell: bash
-
     - name: Terraform Init
-      run: terraform init -upgrade
       shell: bash
       working-directory: environments/${{ inputs.environment }}
+      run: terraform init -upgrade
 
     - name: Terraform Format & Validate
+      shell: bash
+      working-directory: environments/${{ inputs.environment }}
       run: |
         terraform fmt -check
         terraform validate
-      shell: bash
-      working-directory: environments/${{ inputs.environment }}
 
     - name: Terraform Plan (or Destroy Plan)
+      shell: bash
+      working-directory: environments/${{ inputs.environment }}
       run: |
-        if [ "${{ inputs.is_destroy }}" == "true" ]; then
+        if [ "${{ inputs.is_destroy }}" = "true" ]; then
           terraform plan -destroy -out=tfplan -input=false -var-file=${{ inputs.var-file }}
         else
           terraform plan -out=tfplan -input=false -var-file=${{ inputs.var-file }}
         fi
-      shell: bash
-      working-directory: environments/${{ inputs.environment }}
