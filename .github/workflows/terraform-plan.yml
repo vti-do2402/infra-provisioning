@@ -27,7 +27,6 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Fetch terraform.tfvars from GitHub Secrets
-        shell: bash
         working-directory: environments/${{ matrix.environment }}
         run: |
           if [ "${{ matrix.environment }}" = "dev" ]; then
