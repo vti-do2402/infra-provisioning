@@ -33,7 +33,7 @@ module "eks" {
   cluster_version     = var.cluster_version
   vpc_id              = module.networking.vpc_id
   subnet_ids          = module.networking.private_subnet_ids
-  public_access_cidrs = [var.admin_ip, "${module.bastion.public_ip}/32"] # only allow kubelet access from bastion host or admin IP
+  public_access_cidrs = setunion(var.admin_ip, toset(["${module.bastion.public_ip}/32"])) # only allow kubelet access from bastion host or admin IP
   security_group_ids  = [module.security.eks_security_group_id]
   node_groups         = var.node_groups
 

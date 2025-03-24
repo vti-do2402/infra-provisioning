@@ -65,8 +65,8 @@ variable "node_groups" {
 }
 
 variable "admin_ip" {
-  description = "IP address to allow SSH access"
-  type        = string
+  description = "IP addresses to allow SSH access"
+  type        = set(string)
 }
 
 variable "bastion" {
