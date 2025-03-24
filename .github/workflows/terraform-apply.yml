@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        environment: [dev, prod] # Run plan for both environments
+        environment: [dev] # Run plan for dev only, idealy this will be [dev, prod]
 
     steps:
       - name: Checkout code
