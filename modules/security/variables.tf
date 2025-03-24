@@ -10,7 +10,7 @@ variable "cluster_name" {
 
 variable "admin_ip" {
   description = "IP address to allow SSH access"
-  type        = string
+  type        = set(string)
 }
 
 variable "cluster_security_group_id" {

@@ -26,9 +26,10 @@ resource "aws_security_group" "bastion" {
 
 # Bastion: Allow SSH from Admin IP
 resource "aws_vpc_security_group_ingress_rule" "allow_ssh_to_bastion" {
+  for_each = var.admin_ip
   security_group_id = aws_security_group.bastion.id
   description       = "Allow SSH from admin IP"
-  cidr_ipv4         = var.admin_ip
+  cidr_ipv4         = each.value
   from_port         = 22
   ip_protocol       = "tcp"
   to_port           = 22

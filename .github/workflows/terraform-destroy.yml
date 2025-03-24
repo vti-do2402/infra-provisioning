@@ -1,0 +1,58 @@
+name: Terraform Destroy (Manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to destroy (dev or prod)"
+        required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - prod
+      is_destroy:
+        description: "Confirm destroy execution"
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  terraform-destroy:
+    name: Terraform Destroy
+    runs-on: infra-ubuntu-24-04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup AWS and Terraform
+        uses: ./.github/actions/setup
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Fetch terraform.tfvars from GitHub Secrets
+        working-directory: environments/${{ github.event.inputs.environment }}
+        run: |
+          if [ "${{ github.event.inputs.environment }}" = "dev" ]; then
+            echo "${{ secrets.TFVARS_DEV }}" | base64 -d > terraform.tfvars
+          elif [ "${{ github.event.inputs.environment }}" = "prod" ]; then
+            echo "${{ secrets.TFVARS_PROD }}" | base64 -d > terraform.tfvars
+          else
+            echo "Unsupported environment: ${{ github.event.inputs.environment }}"
+            exit 1
+          fi
+
+      - name: Run Terraform Plan
+        uses: ./.github/actions/terraform-plan
+        with:
+          environment: ${{ github.event.inputs.environment }}
+          is_destroy: "true"
+          var-file: terraform.tfvars
+
+      - name: Terraform Destroy
+        if: ${{ github.event.inputs.is_destroy }}
+        working-directory: environments/${{ github.event.inputs.environment }}
+        run: terraform apply -auto-approve
