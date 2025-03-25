@@ -23,8 +23,8 @@ module "ecr" {
   count           = length(var.microservices)
   source          = "../../modules/ecr"
   repository_name = "${local.prefix}/${var.microservices[count.index]}"
-  
-  tags            = local.tags
+
+  tags = local.tags
 }
 
 module "eks" {
