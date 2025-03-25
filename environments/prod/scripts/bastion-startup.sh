@@ -39,7 +39,7 @@ export ARCH=amd64
 curl -o kubectl "https://s3.us-west-2.amazonaws.com/amazon-eks/${KUBECTL_VERSION}/${KUBECTL_RELEASE_DATE}/bin/linux/${ARCH}/kubectl"
 curl -o kubectl.sha256 "https://s3.us-west-2.amazonaws.com/amazon-eks/${KUBECTL_VERSION}/${KUBECTL_RELEASE_DATE}/bin/linux/${ARCH}/kubectl.sha256"
 
-echo "$(cat kubectl.sha256) kubectl" | sha256sum --check
+echo "$(cat kubectl.sha256) kubectl" | sha -a 256 -c
 
 chmod +x kubectl
 sudo mv kubectl /usr/local/bin/kubectl
@@ -51,7 +51,7 @@ rm kubectl.sha256
 export PLATFORM="$(uname -s)_$ARCH"
 
 curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_${PLATFORM}.tar.gz"
-curl -sL "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_checksums.txt" | grep "${PLATFORM}" | sha256sum --check
+curl -sL "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_checksums.txt" | grep "${PLATFORM}" |  sha -a 256 -c
 
 tar -xzf "eksctl_${PLATFORM}.tar.gz" -C /tmp
 sudo mv /tmp/eksctl /usr/local/bin/
