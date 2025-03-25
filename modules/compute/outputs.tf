@@ -17,8 +17,3 @@ output "subnet_id" {
   description = "Subnet ID of the EC2 instance"
   value = aws_instance.ec2.subnet_id
 }
-
-output "ssh_key_path" {
-  description = "Path to the SSH private key"
-  value = local_sensitive_file.ssh_private_key.filename
-}

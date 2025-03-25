@@ -21,4 +21,6 @@ tags = {
   Project = "mock-project"
 }
 
-admin_ip = "0.0.0.0/0"
+admin_ip = [
+ "0.0.0.0/0"
+]

@@ -84,7 +84,8 @@ resource "aws_eks_node_group" "main" {
     aws_iam_role_policy_attachment.node-AmazonEKS_CNI_Policy,
     aws_iam_role_policy_attachment.node-AmazonEC2ContainerRegistryReadOnly,
   ]
-    tags = var.tags
+  
+  tags = var.tags
 
 }
 

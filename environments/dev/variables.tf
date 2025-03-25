@@ -64,6 +64,12 @@ variable "node_groups" {
   }
 }
 
+variable "microservices" {
+  description = "List of microservices"
+  type        = list(string)
+  default     = []
+}
+
 variable "admin_ip" {
   description = "IP addresses to allow SSH access"
   type        = set(string)
