@@ -1,5 +1,5 @@
 name: Terraform Plan
-description: Reusable action to run terraform plan
+description: Reusable action to run terraform plan with validation and security checks
 
 inputs:
   is_destroy:
@@ -18,6 +18,10 @@ inputs:
     description: "Terraform plan output file"
     required: false
     default: tfplan
+  timeout:
+    description: "Timeout for terraform operations in minutes"
+    required: false
+    default: "30"
 
 runs:
   using: "composite"
@@ -25,7 +29,12 @@ runs:
     - name: Terraform Init
       shell: bash
       working-directory: environments/${{ inputs.environment }}
-      run: terraform init -upgrade
+      run: |
+        timeout ${{ inputs.timeout }}m terraform init -upgrade
+        if [ $? -eq 124 ]; then
+          echo "Terraform init timed out after ${{ inputs.timeout }} minutes"
+          exit 1
+        fi
 
     - name: Terraform Format & Validate
       shell: bash
@@ -34,19 +43,47 @@ runs:
         terraform fmt -check
         terraform validate
 
+    - name: Run tflint
+      shell: bash
+      working-directory: environments/${{ inputs.environment }}
+      run: tflint --init && tflint
+
+    - name: Run terrascan
+      shell: bash
+      working-directory: environments/${{ inputs.environment }}
+      run: terrascan scan -i terraform
+
     - name: Terraform Plan (or Destroy Plan)
       if: ${{ inputs.is_destroy == 'false' }}
       shell: bash
       working-directory: environments/${{ inputs.environment }}
-      run: terraform plan -out=${{ inputs.output-file }} -input=false -var-file=${{ inputs.var-file }}
+      run: |
+        timeout ${{ inputs.timeout }}m terraform plan -out=${{ inputs.output-file }} -input=false -var-file=${{ inputs.var-file }}
+        if [ $? -eq 124 ]; then
+          echo "Terraform plan timed out after ${{ inputs.timeout }} minutes"
+          exit 1
+        fi
 
     - name: Terraform Plan (or Destroy Plan)
       if: ${{ inputs.is_destroy == 'true' }}
       shell: bash
       working-directory: environments/${{ inputs.environment }}
-      run: terraform plan -destroy -out=${{ inputs.output-file}} -input=false -var-file=${{ inputs.var-file }}
+      run: |
+        timeout ${{ inputs.timeout }}m terraform plan -destroy -out=${{ inputs.output-file}} -input=false -var-file=${{ inputs.var-file }}
+        if [ $? -eq 124 ]; then
+          echo "Terraform destroy plan timed out after ${{ inputs.timeout }} minutes"
+          exit 1
+        fi
+
+    - name: Check for sensitive values
+      shell: bash
+      working-directory: environments/${{ inputs.environment }}
+      run: |
+        if grep -r "password\|secret\|key\|token" .; then
+          echo "Warning: Potential sensitive values found in plan output"
+        fi
 
 outputs:
   plan-file:
-    description: "Name of the tfplan file"
-    value: ${{ inputs.output-file }}
+    description: "Path to the terraform plan file"
+    value: environments/${{ inputs.environment }}/${{ inputs.output-file }}

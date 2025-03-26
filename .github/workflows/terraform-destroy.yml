@@ -16,11 +16,25 @@ on:
         required: true
         default: false
         type: boolean
+      reason:
+        description: "Reason for destroying infrastructure"
+        required: true
+        type: string
+
+# Add concurrency to prevent multiple runs
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   terraform-destroy:
     name: Terraform Destroy
     runs-on: infra-ubuntu-24-04
+    timeout-minutes: 60
+
+    environment:
+      name: ${{ github.event.inputs.environment }}
+      url: ${{ steps.apply.outputs.apply_url }}
 
     steps:
       - name: Checkout code
@@ -29,9 +43,8 @@ jobs:
       - name: Setup AWS and Terraform
         uses: ./.github/actions/setup
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
 
       - name: Fetch terraform.tfvars from GitHub Secrets
         working-directory: environments/${{ github.event.inputs.environment }}
@@ -51,8 +64,51 @@ jobs:
         with:
           environment: ${{ github.event.inputs.environment }}
           is_destroy: true
+          timeout: 30
 
       - name: Terraform Apply (Destroy)
         if: ${{ github.event.inputs.is_destroy == 'true' }}
+        id: apply
         working-directory: environments/${{ github.event.inputs.environment }}
-        run: terraform apply -auto-approve ${{ steps.plan.outputs.plan-file }}
+        run: |
+          terraform apply -auto-approve ${{ steps.plan.outputs.plan-file }}
+          echo "apply_url=https://${{ github.event.inputs.environment }}.example.com" >> $GITHUB_OUTPUT
+
+      - name: Log Destroy Reason
+        if: ${{ github.event.inputs.is_destroy == 'true' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const message = `🔨 Infrastructure destroyed in ${{ github.event.inputs.environment }} environment\nReason: ${{ github.event.inputs.reason }}\n`;
+            github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body: message
+            });
+
+      - name: Notify on Success
+        if: success() && github.event.inputs.is_destroy == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const message = `✅ Infrastructure successfully destroyed in ${{ github.event.inputs.environment }} environment\n`;
+            github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body: message
+            });
+
+      - name: Notify on Failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const message = `❌ Infrastructure destruction failed in ${{ github.event.inputs.environment }} environment\n`;
+            github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body: message
+            });

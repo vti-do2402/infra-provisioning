@@ -6,10 +6,16 @@ on:
     branches:
       - main
 
+# Add concurrency to prevent multiple runs
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   terraform-plan:
     name: Terraform Plan
     runs-on: infra-ubuntu-24-04
+    timeout-minutes: 60
 
     strategy:
       matrix:
@@ -22,9 +28,8 @@ jobs:
       - name: Setup AWS and Terraform
         uses: ./.github/actions/setup
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
 
       - name: Fetch terraform.tfvars from GitHub Secrets
         working-directory: environments/${{ matrix.environment }}
@@ -44,9 +49,11 @@ jobs:
           environment: ${{ matrix.environment }}
           is_destroy: false
           var-file: terraform.tfvars
+          timeout: 30
 
       - name: Upload Artifact tfplan
         uses: actions/upload-artifact@v4
         with:
           name: tfplan-${{ matrix.environment }}
           path: environments/${{ matrix.environment }}/tfplan
+          retention-days: 7
