@@ -1,3 +1,8 @@
+# Get VPC information
+data "aws_vpc" "selected" {
+  id = var.vpc_id
+}
+
 # Bastion host security group
 module "bastion" {
   source = "./groups/bastion"
@@ -12,15 +17,17 @@ module "bastion" {
 module "mongodb" {
   source = "./groups/mongodb"
 
-  name_prefix               = var.cluster_name
-  vpc_id                    = var.vpc_id
-  allowed_cidr_blocks       = [data.aws_vpc.selected.cidr_block] # Allow access from within VPC
+  name_prefix              = var.cluster_name
+  vpc_id                   = var.vpc_id
+  vpc_cidr                 = data.aws_vpc.selected.cidr_block
+  additional_allowed_cidrs = var.mongodb_allowed_cidrs
   bastion_security_group_id = module.bastion.security_group_id
-  tags                      = var.tags
+  mongodb_port             = var.mongodb_port
+  tags                     = var.tags
 }
 
 # EKS node group security group
-module "eks_nodes" {
+module "eks_node_group" {
   source = "./groups/eks"
 
   name_prefix               = var.cluster_name

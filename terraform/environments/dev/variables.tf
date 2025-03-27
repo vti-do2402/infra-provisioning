@@ -64,28 +64,9 @@ variable "node_groups" {
   }
 }
 
-variable "microservices" {
-  description = "List of microservices"
-  type        = list(string)
-  default     = []
-}
-
 variable "admin_ip" {
   description = "IP addresses to allow SSH access"
   type        = set(string)
-}
-
-variable "bastion" {
-  description = "Bastion host configuration"
-  type = object({
-    instance_type = string
-    key_name      = string
-  })
-  default = {
-    instance_type = "t2.micro"
-    key_name      = "bastion-key"
-  }
-
 }
 
 variable "tags" {

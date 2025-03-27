@@ -6,18 +6,27 @@ variable "bucket_name" {
 variable "enable_versioning" {
   description = "Enable versioning for the S3 bucket"
   type        = bool
+  default     = false
+}
+
+variable "block_public_access" {
+  description = "Whether to block all public access to the bucket"
+  type        = bool
+  default     = true
 }
 
 variable "sse_algorithm" {
-  description = "The server-side encryption algorithm to use"
+  description = "Server-side encryption algorithm. Valid values: AES256, aws:kms"
   type        = string
+  default     = "AES256"
 }
 
 variable "lifecycle_rules" {
-  description = "Lifecycle rules for the S3 bucket"
+  description = "List of lifecycle rules for the bucket"
   type = list(object({
-    id         = string
-    status     = string
+    id      = string
+    status  = string
+    prefix  = optional(string)
     expiration = optional(object({
       days = number
     }))
@@ -29,13 +38,8 @@ variable "lifecycle_rules" {
   default = []
 }
 
-variable "block_public_access" {
-  description = "Block public access to the S3 bucket"
-  type        = bool
-}
-
 variable "tags" {
-  description = "Tags to apply to the S3 bucket"
+  description = "Tags to apply to all resources"
   type        = map(string)
   default     = {}
 }

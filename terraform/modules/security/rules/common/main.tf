@@ -1,6 +1,5 @@
 # Common HTTPS egress rule
 resource "aws_vpc_security_group_egress_rule" "https" {
-  count = var.allow_all_outbound ? 0 : 1
   security_group_id = var.security_group_id
   from_port         = 443
   to_port           = 443
@@ -12,7 +11,6 @@ resource "aws_vpc_security_group_egress_rule" "https" {
 
 # Common DNS rules
 resource "aws_vpc_security_group_egress_rule" "dns" {
-  count = var.allow_all_outbound ? 0 : 1
   for_each = toset(["tcp", "udp"])
 
   security_group_id = var.security_group_id

@@ -12,7 +12,7 @@ module "bastion" {
 }
 
 module "mongodb" {
-  source = "../../modules/mongodb"
+  source = "../../modules/ec2"
 
   instance_name     = "${local.prefix}-mongodb"
   instance_type     = var.mongodb.instance_type
@@ -21,11 +21,12 @@ module "mongodb" {
   security_group_id = module.security.mongodb_security_group_id
   key_name          = var.mongodb.key_name # ensure this exists
   user_data = templatefile("${path.module}/scripts/mongodb-startup.sh", {
-    mongodb_username   = var.mongodb.username
-    mongodb_password   = var.mongodb.password
-    mongodb_port       = var.mongodb.port
-    mongo_express_port = var.mongo_express.port
+    mongodb_username       = var.mongodb.username
+    mongodb_password       = var.mongodb.password
+    mongodb_port           = var.mongodb.port
+    mongodb_data_volume    = var.mongodb.data_volume
+    mongo_express_port     = "27002"
+    docker_compose_version = "1.29.2"
   })
-
   tags = local.tags
 }

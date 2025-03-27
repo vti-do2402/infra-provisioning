@@ -35,6 +35,7 @@ module "common_egress" {
   source = "../../rules/common"
 
   security_group_id = aws_security_group.eks_node_group.id
+  allow_all_outbound = false
   tags             = var.tags
 }
 

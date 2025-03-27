@@ -63,12 +63,6 @@ variable "enable_detailed_monitoring" {
   default     = false
 }
 
-variable "prevent_destroy" {
-  description = "Prevent instance destruction"
-  type        = bool
-  default     = false
-}
-
 variable "iam_instance_profile" {
   description = "IAM instance profile name for the EC2 instance"
   type        = string

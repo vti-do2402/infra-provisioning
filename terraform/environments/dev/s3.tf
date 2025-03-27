@@ -5,18 +5,22 @@ locals {
   # Lifecycle rules for CI/CD artifacts
   cicd_lifecycle_rules = [
     {
-      id      = "cleanup-old-artifacts"
-      status  = "Enabled"
-      # Delete artifacts after 30 days
-      expiration = {
-        days = 30
-      }
-      # Move to IA storage after 7 days
+      id     = "cleanup-old-artifacts"
+      status = "Enabled"
+      prefix = "artifacts/"  # Only apply to artifacts directory
+      expiration = { days = 30 }
       transitions = [
-        {
-          days          = 7
-          storage_class = "STANDARD_IA"
-        }
+        { days = 7, storage_class = "STANDARD_IA" }
+      ]
+    },
+    {
+      id     = "cleanup-old-logs"
+      status = "Enabled"
+      prefix = "logs/"  # Only apply to logs directory
+      expiration = { days = 90 } 
+      transitions = [
+        { days = 30, storage_class = "STANDARD_IA" },
+        { days = 60, storage_class = "GLACIER" }
       ]
     }
   ]

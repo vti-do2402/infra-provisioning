@@ -19,11 +19,11 @@ sudo systemctl enable docker
 sudo usermod -aG docker ec2-user
 
 # Create data volume
-sudo mkdir -p ${var.mongodb.data_volume}
-sudo chown -R 999:999 ${var.mongodb.data_volume}
+sudo mkdir -p ${mongodb_data_volume}
+sudo chown -R 999:999 ${mongodb_data_volume}
 
 # Install docker-compose
-sudo curl -L "https://github.com/docker/compose/releases/download/${var.docker_compose_version}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo curl -L "https://github.com/docker/compose/releases/download/${docker_compose_version}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
 # Create docker-compose for MongoDB and Mongo Express
@@ -32,20 +32,20 @@ services:
   mongodb:
     image: mongo
     ports:
-      - "${var.mongodb.port}:27017"
+      - "${mongodb_port}:27017"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${var.mongodb.username}
-      - MONGO_INITDB_ROOT_PASSWORD=${var.mongodb.password}
+      - MONGO_INITDB_ROOT_USERNAME=${mongodb_username}
+      - MONGO_INITDB_ROOT_PASSWORD=${mongodb_password}
     volumes:
-      - ${var.mongodb.data_volume}:/data/db
+      - ${mongodb_data_volume}:/data/db
 
   mongo-express:
     image: mongo-express
     ports:
-      - "${var.mongo_express.port}:8081"
+      - "${mongo_express_port}:8081"
     environment:
-      - ME_CONFIG_MONGODB_ADMINUSER=${var.mongodb.username}
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=${var.mongodb.password}
+      - ME_CONFIG_MONGODB_ADMINUSER=${mongodb_username}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${mongodb_password}
     depends_on:
       - mongodb
 

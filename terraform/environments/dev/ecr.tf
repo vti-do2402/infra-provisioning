@@ -20,7 +20,7 @@ locals {
   }
 }
 
-module "ecr_microservices_repositories" {
+module "ecr_repositories" {
   source   = "../../modules/ecr"
   for_each = local.ecr_config
 

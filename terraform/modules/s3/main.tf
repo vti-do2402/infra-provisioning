@@ -20,17 +20,20 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "encryption" {
   }
 }
 
+# Single lifecycle configuration with multiple rules
 resource "aws_s3_bucket_lifecycle_configuration" "lifecycle" {
-  count  = length(var.lifecycle_rules) > 0 ? 1 : 0
+  # Only create if there are lifecycle rules
+  count = length(var.lifecycle_rules) > 0 ? 1 : 0
+  
   bucket = aws_s3_bucket.main.id
-
-  # Create rules dynamically based on the input variable
+  
   dynamic "rule" {
     for_each = var.lifecycle_rules
     content {
       id     = rule.value.id
       status = rule.value.status
 
+      # Handle expiration if specified
       dynamic "expiration" {
         for_each = rule.value.expiration != null ? [rule.value.expiration] : []
         content {
@@ -38,6 +41,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "lifecycle" {
         }
       }
 
+      # Handle transitions if specified
       dynamic "transition" {
         for_each = rule.value.transitions != null ? rule.value.transitions : []
         content {
@@ -45,18 +49,21 @@ resource "aws_s3_bucket_lifecycle_configuration" "lifecycle" {
           storage_class = transition.value.storage_class
         }
       }
+
+      # Add filter block (required by AWS)
+      filter {
+        prefix = lookup(rule.value, "prefix", "")
+      }
     }
   }
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access" {
-  count  = var.block_public_access ? 1 : 0
   bucket = aws_s3_bucket.main.id
 
-  # Block all public access
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
+  block_public_acls       = var.block_public_access
+  block_public_policy     = var.block_public_access
+  ignore_public_acls      = var.block_public_access
+  restrict_public_buckets = var.block_public_access
 }
 

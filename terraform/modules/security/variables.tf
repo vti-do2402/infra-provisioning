@@ -1,15 +1,15 @@
-variable "vpc_id" {
-  description = "VPC ID"
+variable "cluster_name" {
+  description = "Name of the cluster (used as prefix for resource names)"
   type        = string
 }
 
-variable "cluster_name" {
-  description = "Name of the EKS cluster"
+variable "vpc_id" {
+  description = "ID of the VPC where security groups will be created"
   type        = string
 }
 
 variable "admin_ip" {
-  description = "IP address to allow SSH access"
+  description = "Set of IP addresses allowed to access the bastion host"
   type        = set(string)
 }
 
@@ -18,8 +18,20 @@ variable "cluster_security_group_id" {
   type        = string
 }
 
+variable "mongodb_allowed_cidrs" {
+  description = "List of additional CIDR blocks allowed to access MongoDB"
+  type        = list(string)
+  default     = []
+}
+
+variable "mongodb_port" {
+  description = "Port number for MongoDB"
+  type        = number
+  default     = 27017
+}
+
 variable "tags" {
-  description = "Tags for the EC2 instance"
+  description = "Tags to apply to all resources"
   type        = map(string)
   default     = {}
 }

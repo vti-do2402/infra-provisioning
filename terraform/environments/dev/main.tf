@@ -21,7 +21,6 @@ module "security" {
 
 module "eks" {
   source = "../../modules/eks"
-  count  = 0
 
   depends_on          = [module.bastion]
   cluster_name        = "${local.prefix}-${var.cluster_name}"

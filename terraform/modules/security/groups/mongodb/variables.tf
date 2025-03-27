@@ -8,9 +8,14 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "allowed_cidr_blocks" {
-  description = "List of CIDR blocks allowed to access MongoDB"
-  type        = set(string)
+variable "vpc_cidr" {
+  description = "CIDR block of the VPC for allowing internal access"
+  type        = string
+}
+
+variable "additional_allowed_cidrs" {
+  description = "List of additional CIDR blocks allowed to access MongoDB"
+  type        = list(string)
   default     = []
 }
 
