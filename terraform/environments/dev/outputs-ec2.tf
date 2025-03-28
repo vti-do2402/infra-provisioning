@@ -1,19 +1,10 @@
-output "bastion" {
-  description = "Bastion host information"
+output "ec2_instances" {
+  description = "EC2 instances"
   value = {
-    instance_id = module.bastion.instance_id
-    public_ip   = module.bastion.public_ip
-    private_ip  = module.bastion.private_ip
-    subnet_id   = module.bastion.subnet_id
-  }
-}
-
-output "mongodb" {
-  description = "MongoDB information"
-  value = {
-    instance_id = module.mongodb.instance_id
-    public_ip   = module.mongodb.public_ip
-    private_ip  = module.mongodb.private_ip
-    subnet_id   = module.mongodb.subnet_id
+    for name, instance in module.ec2_instances : name => {
+      id         = instance.id
+      public_ip  = instance.public_ip
+      private_ip = instance.private_ip
+    }
   }
 }

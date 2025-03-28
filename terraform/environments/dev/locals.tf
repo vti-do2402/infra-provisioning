@@ -4,6 +4,7 @@ locals {
   public_subnets  = [for i, az in local.azs : cidrsubnet(var.vpc_cidr, 8, i)]
   private_subnets = [for i, az in local.azs : cidrsubnet(var.vpc_cidr, 8, i + 3)]
 
+  is_dev = local.tags["Environment"] == "dev"
   tags = merge(var.tags, {
     Terraform   = true
     Environment = "dev"

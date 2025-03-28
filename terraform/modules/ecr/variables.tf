@@ -4,24 +4,24 @@ variable "repository_name" {
 }
 
 variable "image_tag_mutability" {
-  description = "The tag mutability setting for the repository. Valid values are MUTABLE or IMMUTABLE"
+  description = "The tag mutability setting for the repository. Must be one of: MUTABLE or IMMUTABLE"
   type        = string
-  default     = "MUTABLE"
-  
+  default     = "IMMUTABLE"
+
   validation {
     condition     = contains(["MUTABLE", "IMMUTABLE"], var.image_tag_mutability)
-    error_message = "image_tag_mutability must be either MUTABLE or IMMUTABLE"
+    error_message = "Image tag mutability must be either MUTABLE or IMMUTABLE."
   }
 }
 
 variable "encryption_type" {
-  description = "The encryption type for the repository. Valid values are AES256 or KMS"
+  description = "The encryption type for the repository. Must be one of: AES256 or KMS"
   type        = string
   default     = "AES256"
-  
+
   validation {
     condition     = contains(["AES256", "KMS"], var.encryption_type)
-    error_message = "encryption_type must be either AES256 or KMS"
+    error_message = "Encryption type must be either AES256 or KMS."
   }
 }
 
@@ -37,8 +37,32 @@ variable "force_delete" {
   default     = false
 }
 
+variable "lifecycle_policy" {
+  description = "JSON formatted ECR lifecycle policy"
+  type        = string
+  default     = null
+}
+
+variable "pull_principals" {
+  description = "List of AWS principal ARNs allowed to pull images"
+  type        = list(string)
+  default     = []
+}
+
+variable "push_principals" {
+  description = "List of AWS principal ARNs allowed to push images"
+  type        = list(string)
+  default     = []
+}
+
+variable "cross_account_principals" {
+  description = "List of AWS principal ARNs from other accounts allowed to pull images"
+  type        = list(string)
+  default     = []
+}
+
 variable "tags" {
-  description = "Tags to apply to the repository"
+  description = "A map of tags to add to all resources"
   type        = map(string)
   default     = {}
 }

@@ -4,23 +4,6 @@ data "aws_ssm_parameter" "ubuntu_24_04_ami" {
   name = "/aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id"
 }
 
-# data "aws_ami" "ubuntu" {
-#   most_recent = true
-#   owners      = ["099720109477"] # Canonical's official AWS account
-
-#   filter {
-#     name   = "name"
-#     values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
-#   }
-
-#   filter {
-#     name   = "virtualization-type"
-#     values = ["hvm"]
-#   }
-# }
-
-
-
 data "aws_ami" "amazon_linux" {
   most_recent = true
   owners      = ["amazon"]
@@ -29,3 +12,10 @@ data "aws_ami" "amazon_linux" {
     values = ["amzn2-ami-hvm-*-x86_64-gp2"]
   }
 }
+
+data "aws_caller_identity" "current" {}
+
+data "aws_iam_instance_profile" "eks_node_role" {
+  name = "AmazonEKSNodePolicy"
+}
+

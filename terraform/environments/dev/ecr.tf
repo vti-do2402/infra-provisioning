@@ -18,17 +18,51 @@ locals {
       tags = { Service = "database-service" }
     }
   }
+
+  # Standard lifecycle policy for all repositories
+  lifecycle_policy = jsonencode({
+    rules = [
+      {
+        rulePriority = 1
+        description  = "Keep last 30 tagged images"
+        selection = {
+          tagStatus     = "tagged"
+          tagPrefixList = ["v"]
+          countType     = "imageCountMoreThan"
+          countNumber   = 30
+        }
+        action = {
+          type = "expire"
+        }
+      },
+      {
+        rulePriority = 2
+        description  = "Remove untagged images after 14 days"
+        selection = {
+          tagStatus   = "untagged"
+          countType   = "sinceImagePushed"
+          countUnit   = "days"
+          countNumber = 14
+        }
+        action = {
+          type = "expire"
+        }
+      }
+    ]
+  })
 }
 
+# Create ECR repositories for each service
 module "ecr_repositories" {
   source   = "../../modules/ecr"
   for_each = local.ecr_config
 
   repository_name      = "${local.prefix}/${each.value.name}"
-  image_tag_mutability = "IMMUTABLE" # Prevent tag overwriting for security
+  image_tag_mutability = local.is_dev ? "MUTABLE" : "IMMUTABLE"
   encryption_type      = "AES256"
-  scan_on_push         = true
-  force_delete         = true # Allow repository deletion with images (for dev only)
+  scan_on_push         = !local.is_dev
+  force_delete         = local.is_dev
+  lifecycle_policy     = local.lifecycle_policy
 
   tags = merge(local.tags, each.value.tags)
 }

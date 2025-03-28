@@ -1,43 +1,66 @@
 # S3 bucket for storing CI/CD Artifacts
 locals {
-  cicd_bucket_name = "${local.prefix}-cicd-artifacts"
-  
-  # Lifecycle rules for CI/CD artifacts
-  cicd_lifecycle_rules = [
+  // Common transition rules for all buckets
+  transition_rules = [
     {
-      id     = "cleanup-old-artifacts"
-      status = "Enabled"
-      prefix = "artifacts/"  # Only apply to artifacts directory
-      expiration = { days = 30 }
-      transitions = [
-        { days = 7, storage_class = "STANDARD_IA" }
-      ]
+      days          = 30
+      storage_class = "STANDARD_IA"
     },
     {
-      id     = "cleanup-old-logs"
-      status = "Enabled"
-      prefix = "logs/"  # Only apply to logs directory
-      expiration = { days = 90 } 
-      transitions = [
-        { days = 30, storage_class = "STANDARD_IA" },
-        { days = 60, storage_class = "GLACIER" }
-      ]
+      days          = 60
+      storage_class = "GLACIER"
     }
   ]
+
+  bucket_config = {
+    // Bucket for storing CI/CD artifacts
+    artifacts = {
+      bucket_name         = "${local.prefix}-artifacts"
+      enable_versioning   = true
+      sse_algorithm       = "AES256"
+      block_public_access = true
+      lifecycle_rules = [
+        {
+          id      = "ci-artifacts"
+          enabled = true
+          prefix  = "artifacts/"
+          filter = [{
+            tags = {
+              Role = "cicd"
+            }
+          }]
+          transition = local.transition_rules
+          expiration = {
+            days = 90
+          }
+        }
+      ]
+      tags = {
+        Role = "cicd"
+      }
+    }
+    // Bucket for storing private keys
+    private_key = {
+      bucket_name         = "${local.prefix}-private-key"
+      enable_versioning   = false
+      sse_algorithm       = "AES256"
+      block_public_access = true
+      lifecycle_rules     = []
+      tags = {
+        Role = "private-key"
+      }
+    }
+  }
 }
 
-# CI/CD artifacts bucket
-module "cicd_artifacts_bucket" {
-  source = "../../modules/s3"
+module "s3_buckets" {
+  source   = "../../modules/s3"
+  for_each = local.bucket_config
 
-  bucket_name         = local.cicd_bucket_name
-  enable_versioning   = true
-  block_public_access = false # Allow public access for dev only
-  sse_algorithm       = "AES256"
-  lifecycle_rules     = local.cicd_lifecycle_rules
-
-  tags = merge(local.tags, {
-    Name = local.cicd_bucket_name
-    Role = "cicd"
-  })
+  bucket_name         = each.value.bucket_name
+  enable_versioning   = each.value.enable_versioning
+  sse_algorithm       = each.value.sse_algorithm
+  block_public_access = each.value.block_public_access
+  lifecycle_rules     = each.value.lifecycle_rules
+  tags                = merge(local.tags, each.value.tags)
 }

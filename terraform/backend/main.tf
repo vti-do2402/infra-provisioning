@@ -2,27 +2,33 @@ provider "aws" {
   region = "us-west-2"
 }
 
-module "s3" {
-  source = "../modules/s3"
+resource "aws_s3_bucket" "terraform_state" {
+  bucket = "${local.tags.Owner}-${local.tags.Project}-terraform-state"
 
-  bucket_name = "${local.tags.Owner}-${local.tags.Project}-terraform-state"
-  block_public_access = false
-  enable_versioning = true
-  sse_algorithm = "AES256"
-  lifecycle_rules = [
-    {
-      id = "terraform-state-lifecycle-rule"
-      status = "Enabled"
-      expiration = {
-        days = 30
-      }
-      transition = {
-        days = 30
-      }
-    }
-  ]
+  lifecycle {
+    prevent_destroy = false
+  }
 
   tags = local.tags
+}
+
+resource "aws_s3_bucket_versioning" "terraform_state" {
+  bucket = aws_s3_bucket.terraform_state.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" {
+  bucket = aws_s3_bucket.terraform_state.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
 }
 
 resource "aws_dynamodb_table" "terraform_state_lock" {
@@ -37,4 +43,3 @@ resource "aws_dynamodb_table" "terraform_state_lock" {
 
   tags = local.tags
 }
-
