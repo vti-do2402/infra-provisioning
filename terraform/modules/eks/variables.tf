@@ -18,23 +18,35 @@ variable "subnet_ids" {
   type        = list(string)
 }
 
+variable "control_plane_subnet_ids" {
+  description = "A list of subnet IDs where the EKS control plane will be provisioned"
+  type        = list(string)
+  default     = []
+}
+
 variable "node_groups" {
   description = "Map of EKS managed node group definitions to create"
   type = map(object({
-    ami_type = optional(string, "AL2_x86_64")
+    ami_type       = optional(string, "AL2_x86_64")
     instance_types = list(string)
     capacity_type  = optional(string, "ON_DEMAND")
-    disk_size     = optional(number, 50)
-    min_size      = number
-    max_size      = number
-    desired_size  = number
-    labels        = optional(map(string), {})
+    disk_size      = optional(number, 50)
+    min_size       = number
+    max_size       = number
+    desired_size   = number
+    labels         = optional(map(string), {})
   }))
   default = {}
 }
 
 variable "enable_public_access" {
   description = "Enable public API server endpoint access"
+  type        = bool
+  default     = false
+}
+
+variable "enable_private_access" {
+  description = "Enable private API server endpoint access"
   type        = bool
   default     = true
 }
@@ -45,11 +57,37 @@ variable "public_access_cidrs" {
   default     = ["0.0.0.0/0"]
 }
 
-variable "additional_security_group_ids" {
-  description = "Additional security group IDs to attach to the EKS cluster"
-  type        = list(string)
-  default     = []
+variable "cluster_security_group_id" {
+  description = "ID of the security group for the EKS cluster"
+  type        = string
+  default     = null
 }
+
+variable "cluster_security_group_additional_rules" {
+  description = "Additional security group rules to add to the EKS cluster"
+  type        = any
+  default = null
+}
+
+variable "node_security_group_id" {
+  description = "ID of the security group for the EKS nodes"
+  type        = string
+  default     = null
+}
+
+variable "node_security_group_additional_rules" {
+  description = "Additional security group rules to add to the EKS nodes"
+  type        = any
+  default = null
+}
+
+variable "bastion_security_group_id" {
+  description = "ID of the security group for the bastion host"
+  type        = string
+  default     = null
+}
+
+
 
 variable "tags" {
   description = "A map of tags to add to all resources"

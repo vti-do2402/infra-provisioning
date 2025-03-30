@@ -1,14 +1,25 @@
+locals {
+  azs              = slice(data.aws_availability_zones.available.names, 0, 3)
+  public_subnets   = [for i, az in local.azs : cidrsubnet(var.vpc_cidr, 8, i)]
+  private_subnets  = [for i, az in local.azs : cidrsubnet(var.vpc_cidr, 8, i + 10)]
+  database_subnets = [for i, az in local.azs : cidrsubnet(var.vpc_cidr, 8, i + 20)]
+  intra_subnets    = [for i, az in local.azs : cidrsubnet(var.vpc_cidr, 8, i + 30)]
+}
 module "networking" {
   source = "../../modules/networking"
 
-  vpc_name             = local.prefix
-  prefix               = local.prefix
-  vpc_cidr             = var.vpc_cidr
-  availability_zones   = length(var.availability_zones) > 0 ? var.availability_zones : local.azs
-  public_subnet_cidrs  = length(var.public_subnet_cidrs) > 0 ? var.public_subnet_cidrs : local.public_subnets
-  private_subnet_cidrs = length(var.private_subnet_cidrs) > 0 ? var.private_subnet_cidrs : local.private_subnets
-  cluster_name         = "${local.prefix}-${var.cluster_name}"
-  admin_ip_ranges      = var.admin_ip_ranges
+  vpc_name = local.prefix
+  prefix   = local.prefix
+  vpc_cidr = var.vpc_cidr
+  // If var null, use local values
+  availability_zones    = var.availability_zones == null ? local.azs : var.availability_zones
+  public_subnet_cidrs   = var.public_subnet_cidrs == null ? local.public_subnets : var.public_subnet_cidrs
+  private_subnet_cidrs  = var.private_subnet_cidrs == null ? local.private_subnets : var.private_subnet_cidrs
+  database_subnet_cidrs = var.database_subnet_cidrs == null ? local.database_subnets : var.database_subnet_cidrs
+  intra_subnet_cidrs    = var.intra_subnet_cidrs == null ? local.intra_subnets : var.intra_subnet_cidrs
+
+  cluster_name    = "${local.prefix}-${var.cluster_name}"
+  admin_ip_ranges = var.admin_ip_ranges
   private_subnet_tags = merge(
     local.tags,
     {
@@ -21,6 +32,15 @@ module "networking" {
       "kubernetes.io/role/elb"                    = 1
       "kubernetes.io/cluster/${var.cluster_name}" = "shared"
   })
+  database_subnet_tags = merge(
+    local.tags,
+    {
+      "kubernetes.io/role/internal-elb"           = 1
+      "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+      "kubernetes.io/role/cni"                    = 1
+    }
+  )
+
 
   tags = local.tags
 }

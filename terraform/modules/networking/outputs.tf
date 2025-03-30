@@ -23,6 +23,16 @@ output "public_subnets" {
   value       = module.vpc.public_subnets
 }
 
+output "intra_subnets" {
+  description = "List of IDs of intra subnets"
+  value       = module.vpc.intra_subnets
+}
+
+output "database_subnets" {
+  description = "List of IDs of database subnets"
+  value       = module.vpc.database_subnets
+}
+
 output "public_subnet_cidrs" {
   description = "List of CIDRs of public subnets"
   value       = module.vpc.public_subnets_cidr_blocks
@@ -31,7 +41,17 @@ output "public_subnet_cidrs" {
 output "private_subnet_cidrs" {
   description = "List of CIDRs of private subnets"
   value       = module.vpc.private_subnets_cidr_blocks
-} 
+}
+
+output "intra_subnet_cidrs" {
+  description = "List of CIDRs of intra subnets"
+  value       = module.vpc.intra_subnets_cidr_blocks
+}
+
+output "database_subnet_cidrs" {
+  description = "List of CIDRs of database subnets"
+  value       = module.vpc.database_subnets_cidr_blocks
+}
 
 output "nat_public_ips" {
   description = "List of public Elastic IPs created for AWS NAT Gateway"
@@ -52,4 +72,9 @@ output "mongodb_security_group_id" {
 output "eks_node_security_group_id" {
   description = "ID of the EKS node security group"
   value       = module.eks_node_sg.security_group_id
+}
+
+output "eks_cluster_security_group_id" {
+  description = "ID of the EKS cluster security group"
+  value       = module.eks_cluster_sg.security_group_id
 }

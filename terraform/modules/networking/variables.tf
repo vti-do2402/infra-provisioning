@@ -16,11 +16,25 @@ variable "availability_zones" {
 variable "private_subnet_cidrs" {
   description = "CIDR blocks for private subnets"
   type        = list(string)
+  default     = []
 }
 
 variable "public_subnet_cidrs" {
   description = "CIDR blocks for public subnets"
   type        = list(string)
+  default     = []
+}
+
+variable "intra_subnet_cidrs" {
+  description = "CIDR blocks for intra subnets (no internet access)"
+  type        = list(string)
+  default     = []
+}
+
+variable "database_subnet_cidrs" {
+  description = "CIDR blocks for database subnets"
+  type        = list(string)
+  default     = []
 }
 
 variable "cluster_name" {
@@ -47,6 +61,18 @@ variable "private_subnet_tags" {
 
 variable "public_subnet_tags" {
   description = "Additional tags for public subnets"
+  type        = map(string)
+  default     = {}
+}
+
+variable "intra_subnet_tags" {
+  description = "Additional tags for intra subnets"
+  type        = map(string)
+  default     = {}
+}
+
+variable "database_subnet_tags" {
+  description = "Additional tags for database subnets"
   type        = map(string)
   default     = {}
 }
