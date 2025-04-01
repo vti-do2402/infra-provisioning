@@ -1,27 +1,49 @@
-vpc_cidr             = "10.0.0.0/16"
-private_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
-public_subnet_cidrs  = ["10.0.3.0/24", "10.0.4.0/24"]
-# availability_zones      = ["us-west-2a", "us-west-2b", "us-west-2c"]
-
-cluster_name    = "eks-cluster"
+# Cluster configuration
+cluster_name    = "quentin-cluster"
 cluster_version = "1.32"
+
+# VPC configuration
+vpc_cidr = "10.0.0.0/16"
+# public_subnet_cidrs = [ # For bastion hosts
+#   "10.0.1.0/24",
+#   "10.0.2.0/24"
+# ]
+
+# private_subnet_cidrs = [ # For EKS worker nodes
+#   "10.0.10.0/24",
+#   "10.0.11.0/24"
+# ]
+
+# database_subnet_cidrs = [ # For MongoDB
+#   "10.0.20.0/24",
+#   "10.0.21.0/24"
+# ]
+# availability_zones = ["us-west-2a", "us-west-2b", "us-west-2c"]
+availability_zones    = null
+public_subnet_cidrs   = null
+private_subnet_cidrs  = null
+database_subnet_cidrs = null // null to auto create
+intra_subnet_cidrs    = [] // empty for not creating
+
+# Node Groups
 node_groups = {
-  general = {
+  apps = {
+    ami_type       = "AL2023_x86_64_STANDARD"
     instance_types = ["t3.medium"]
-    capacity_type  = "ON_DEMAND"
-    scaling_config = {
-      desired_size = 2
-      max_size     = 4
-      min_size     = 1
-    }
+    min_size       = 1
+    max_size       = 5
+    desired_size   = 2
   }
 }
 
+
+# Tags
 tags = {
   Owner   = "quentin"
   Project = "mock-project"
 }
 
-admin_ip = [
-  "0.0.0.0/0"
+# Access Control
+admin_ip_ranges = [
+  "<YOUR_IP>/32"
 ]

@@ -36,23 +36,9 @@ services:
             - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_ADMIN_PASSWORD}
         volumes:
             - ${DATA_VOLUME}:/data/db
-    mongo-express:
-        image: mongo-express
-        restart: unless-stopped
-        ports:
-            - "8081:8081"
-        environment:
-            - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGODB_ADMIN_USERNAME}
-            - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGODB_ADMIN_PASSWORD}
-        depends_on:
-            - mongo
-
-volumes:
-    mongo-data:
-
 EOF
 
 # Run docker compose
 docker compose up -d
-echo "MongoDB and Mongo Express are running"
+echo "MongoDB is running"
 

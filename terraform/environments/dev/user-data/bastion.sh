@@ -32,9 +32,6 @@ fi
 #-------------------------------
 # Install kubectl for EKS (v1.31.3)
 #-------------------------------
-export KUBECTL_VERSION="1.32.0"
-export KUBECTL_RELEASE_DATE="2024-12-20"
-export ARCH=amd64
 
 curl -o kubectl "https://s3.us-west-2.amazonaws.com/amazon-eks/${KUBECTL_VERSION}/${KUBECTL_RELEASE_DATE}/bin/linux/${ARCH}/kubectl"
 curl -o kubectl.sha256 "https://s3.us-west-2.amazonaws.com/amazon-eks/${KUBECTL_VERSION}/${KUBECTL_RELEASE_DATE}/bin/linux/${ARCH}/kubectl.sha256"
