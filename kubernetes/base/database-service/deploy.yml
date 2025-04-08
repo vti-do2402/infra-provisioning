@@ -26,11 +26,11 @@ spec:
       serviceAccountName: quentin-mock-project
       containers:
         - name: database-service
-          image: 257120632758.dkr.ecr.us-west-2.amazonaws.com/quentin-mock-project-dev/database-service:v0.0.1
+          image: 257120632758.dkr.ecr.us-west-2.amazonaws.com/quentin-mock-project-dev/database-service:v0.1.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8081
-              name: database-service-container-port
+              name: db-port
           env:
             - name: PORT
               value: "8081"

@@ -14,11 +14,11 @@ spec:
   type: ClusterIP
   ports:
     - port: 8081
-      name: database-service-svc-port
-      targetPort: database-service-container-port
+      name: db-svc-port
+      targetPort: db-port
     # TODO: Test this port with external MongdoDB on EC2
     - port: 27017
-      name: database-service-mongo-port
+      name: db-mongo-port
       targetPort: 27017
   selector:
     quentindev.io/name: mock-project-database-service

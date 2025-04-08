@@ -26,11 +26,11 @@ spec:
       serviceAccountName: quentin-mock-project
       containers:
         - name: ui-service
-          image: 257120632758.dkr.ecr.us-west-2.amazonaws.com/quentin-mock-project-dev/ui-service:v0.0.1
+          image: 257120632758.dkr.ecr.us-west-2.amazonaws.com/quentin-mock-project-dev/ui-service:v0.1.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
-              name: ui-container-port
+              name: ui-port
           env:
             - name: API_URL
               value: http://mock-project-api-gateway:8080

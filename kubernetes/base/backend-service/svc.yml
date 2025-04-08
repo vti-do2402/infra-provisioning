@@ -14,7 +14,7 @@ spec:
   type: ClusterIP
   ports:
     - port: 8082
-      name: backend-service-svc-port
-      targetPort: backend-service-container-port
+      name: be-svc-port
+      targetPort: be-port
   selector:
     quentindev.io/name: mock-project-backend-service
