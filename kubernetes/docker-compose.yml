@@ -1,0 +1,88 @@
+services:
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=mock-project
+    healthcheck:
+      test: ["CMD", "mongo", "admin", "--eval", "db.stats()"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  mongo-express:
+    image: mongo-express
+    ports:
+      - 8089:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_URL=mongodb://admin:password@mongo:27017/mock-project?authSource=admin
+      - ME_CONFIG_BASICAUTH=false
+    depends_on:
+      - mongo
+
+  database-service:
+    build:
+      context: ../../microservices/database-service
+      dockerfile: Dockerfile
+    # image: 257120632758.dkr.ecr.us-west-2.amazonaws.com/quentin-mock-project-dev/database-service:v0.0.3
+    platform: linux/amd64
+    ports:
+      - 8081:8081
+    environment:
+      - SERVER_PORT=8081
+      - DATABASE_PORT=27017
+      - MONGODB_URI=mongodb://admin:password@mongo:27017/mock-project?authSource=admin
+    depends_on:
+      - mongo
+
+  backend-service:
+    build:
+      context: ../../microservices/backend-service
+      dockerfile: Dockerfile
+    # image: 257120632758.dkr.ecr.us-west-2.amazonaws.com/quentin-mock-project-dev/backend-service:v0.0.1
+    platform: linux/amd64
+    ports:
+      - 8082:8082
+    environment:
+      - SERVER_PORT=8082
+      - DATABASE_SERVICE_URL=http://database-service:8081
+    depends_on:
+      - database-service
+
+  api-gateway:
+    build:
+      context: ../../microservices/api-gateway
+      dockerfile: Dockerfile
+    # image: 257120632758.dkr.ecr.us-west-2.amazonaws.com/quentin-mock-project-dev/api-gateway:v0.0.1
+    platform: linux/amd64
+    ports:
+      - 8080:8080
+    environment:
+      - SERVER_PORT=8080
+      - UI_SERVICE_URL=http://ui-service:3000
+      - BACKEND_SERVICE_URL=http://backend-service:8082
+      - DATABASE_SERVICE_URL=http://database-service:8081
+    depends_on:
+      - backend-service
+      - database-service
+
+  ui-service:
+    build:
+      context: ../../microservices/ui-service
+      dockerfile: Dockerfile
+      # image: 257120632758.dkr.ecr.us-west-2.amazonaws.com/quentin-mock-project-dev/ui-service:v0.0.1
+    platform: linux/amd64
+    ports:
+      - 3000:80
+    environment:
+      - PORT=80
+      - HOSTNAME=ui-service
+      - API_URL=http://api-gateway:8080
+    depends_on:
+      - api-gateway

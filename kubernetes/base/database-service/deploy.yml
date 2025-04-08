@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mock-project-database-service
+  labels:
+    quentindev.io/name: mock-project-database-service
+    app.kubernetes.io/instance: mock-project
+    app.kubernetes.io/component: database-service
+    app.kubernetes.io/name: mock-project-database-service
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/part-of: mock-project
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      quentindev.io/name: mock-project-database-service
+  template:
+    metadata:
+      labels:
+        quentindev.io/name: mock-project-database-service
+        app.kubernetes.io/instance: mock-project
+        app.kubernetes.io/component: database-service
+        app.kubernetes.io/name: mock-project-database-service
+    spec:
+      serviceAccountName: quentin-mock-project
+      containers:
+        - name: database-service
+          image: 257120632758.dkr.ecr.us-west-2.amazonaws.com/quentin-mock-project-dev/database-service:v0.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+              name: database-service-container-port
+          env:
+            - name: PORT
+              value: "8081"
+            - name: HOSTNAME
+              value: mock-project-database-service
+          envFrom:
+            - secretRef:
+                name: mock-project-database-secret
+                key: MONGODB_URI
+          resources:
+            limits:
+              cpu: 500m
+              memory: 250Mi

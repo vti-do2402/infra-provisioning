@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui-service
+  labels:
+    quentindev.io/name: mock-project-ui-service
+    app.kubernetes.io/instance: mock-project
+    app.kubernetes.io/component: ui-service
+    app.kubernetes.io/name: mock-project-ui-service
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/part-of: mock-project
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      quentindev.io/name: mock-project-ui-service
+  template:
+    metadata:
+      labels:
+        quentindev.io/name: mock-project-ui-service
+        app.kubernetes.io/instance: mock-project
+        app.kubernetes.io/component: ui-service
+        app.kubernetes.io/name: mock-project-ui-service
+    spec:
+      serviceAccountName: quentin-mock-project
+      containers:
+        - name: ui-service
+          image: 257120632758.dkr.ecr.us-west-2.amazonaws.com/quentin-mock-project-dev/ui-service:v0.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+              name: ui-container-port
+          env:
+            - name: API_URL
+              value: http://mock-project-api-gateway:8080
+            - name: PORT
+              value: "3000"
+            - name: HOSTNAME
+              value: mock-project-ui-service
+          resources:
+            limits:
+              cpu: 500m
+              memory: 250Mi

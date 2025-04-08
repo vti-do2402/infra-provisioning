@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mock-project-database-service
+  labels:
+    quentindev.io/name: mock-project-database-service
+    app.kubernetes.io/instance: mock-project
+    app.kubernetes.io/component: database-service
+    app.kubernetes.io/name: mock-project-database-service
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/part-of: mock-project
+
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8081
+      name: database-service-svc-port
+      targetPort: database-service-container-port
+    # TODO: Test this port with external MongdoDB on EC2
+    - port: 27017
+      name: database-service-mongo-port
+      targetPort: 27017
+  selector:
+    quentindev.io/name: mock-project-database-service

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mock-project-api-gateway
+  labels:
+    quentindev.io/name: mock-project-api-gateway
+    app.kubernetes.io/instance: mock-project
+    app.kubernetes.io/component: api-gateway
+    app.kubernetes.io/name: mock-project-api-gateway
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/part-of: mock-project
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      quentindev.io/name: mock-project-api-gateway
+  template:
+    metadata:
+      labels:
+        quentindev.io/name: mock-project-api-gateway
+        app.kubernetes.io/instance: mock-project
+        app.kubernetes.io/component: api-gateway
+        app.kubernetes.io/name: mock-project-api-gateway
+    spec:
+      serviceAccountName: quentin-mock-project
+      containers:
+        - name: api-gateway
+          image: 257120632758.dkr.ecr.us-west-2.amazonaws.com/quentin-mock-project-dev/api-gateway:v0.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: api-gateway-container-port
+          env:
+            - name: PORT
+              value: "8080"
+            - name: HOSTNAME
+              value: mock-project-api-gateway
+            - name: DATABASE_SERVICE_URL
+              value: http://mock-project-database-service.mock-project.svc.cluster.local:8081
+            - name: BACKEND_SERVICE_URL
+              value: http://mock-project-backend-service.mock-project.svc.cluster.local:8082
+            - name: UI_SERVICE_URL
+              value: http://mock-project-ui-service.mock-project.svc.cluster.local:3000
+          resources:
+            limits:
+              cpu: 500m
+              memory: 250Mi

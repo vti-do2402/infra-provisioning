@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mock-project-backend-service
+  labels:
+    quentindev.io/name: mock-project-backend-service
+    app.kubernetes.io/instance: mock-project
+    app.kubernetes.io/component: backend-service
+    app.kubernetes.io/name: mock-project-backend-service
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/part-of: mock-project
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      quentindev.io/name: mock-project-backend-service
+  template:
+    metadata:
+      labels:
+        quentindev.io/name: mock-project-backend-service
+        app.kubernetes.io/instance: mock-project
+        app.kubernetes.io/component: backend-service
+        app.kubernetes.io/name: mock-project-backend-service
+    spec:
+      serviceAccountName: quentin-mock-project
+      containers:
+        - name: backend-service
+          image: 257120632758.dkr.ecr.us-west-2.amazonaws.com/quentin-mock-project-dev/backend-service:v0.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+              name: backend-service-container-port
+          env:
+            - name: PORT
+              value: "8082"
+            - name: HOSTNAME
+              value: mock-project-backend-service
+            - name: DATABASE_SERVICE_URL
+              value: http://mock-project-database-service.mock-project.svc.cluster.local:8081
+          resources:
+            limits:
+              cpu: 500m
+              memory: 250Mi

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mock-project-ui-service
+  labels:
+    quentindev.io/name: mock-project-ui-service
+    app.kubernetes.io/instance: mock-project
+    app.kubernetes.io/component: ui-service
+    app.kubernetes.io/name: mock-project-ui-service
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/part-of: mock-project
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+      name: ui-service-svc-port
+      targetPort: ui-container-port
+  selector:
+    quentindev.io/name: mock-project-ui-service
