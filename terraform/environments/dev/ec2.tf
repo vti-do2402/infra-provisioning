@@ -33,6 +33,7 @@ locals {
         MONGODB_ADMIN_USERNAME = var.mongodb.admin_username
         MONGODB_ADMIN_PASSWORD = var.mongodb.admin_password
         DATA_VOLUME            = var.mongodb.data_volume
+        MONGODB_DATABASE       = var.mongodb.database
       })
       tags = {}
     }

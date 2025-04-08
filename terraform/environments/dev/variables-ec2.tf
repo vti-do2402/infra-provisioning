@@ -6,6 +6,7 @@ variable "mongodb" {
     admin_username = string
     admin_password = string
     data_volume    = string
+    database       = string
   })
   default = {
     instance_type  = "t2.micro"
@@ -13,6 +14,7 @@ variable "mongodb" {
     admin_username = "admin"
     admin_password = "password"
     data_volume    = "/home/ec2-user/mongodb-data"
+    database       = "mock-project"
   }
 }
 

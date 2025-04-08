@@ -29,3 +29,13 @@ output "security_groups" {
     eks_cluster = module.networking.eks_cluster_security_group_id
   }
 }
+
+output "iam" {
+  description = "IAM details"
+  value = {
+    iam_role_arn = module.iam.iam_role_arn
+    oidc_provider_arn = module.iam.oidc_provider_arn
+    oidc_provider_thumbprint = module.iam.oidc_provider_thumbprint
+    # policy_document_ecr = module.iam.policy_document_ecr
+  }
+}

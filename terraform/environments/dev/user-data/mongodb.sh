@@ -34,6 +34,7 @@ services:
         environment:
             - MONGO_INITDB_ROOT_USERNAME=${MONGODB_ADMIN_USERNAME}
             - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_ADMIN_PASSWORD}
+            - MONGO_INITDB_DATABASE=${MONGODB_DATABASE}
         volumes:
             - ${DATA_VOLUME}:/data/db
     mongo-express:

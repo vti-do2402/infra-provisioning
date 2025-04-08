@@ -14,6 +14,8 @@ module "main" {
   repository_image_scan_on_push = var.scan_on_push
 
   # Access management
+  create_lifecycle_policy = false
+  # attach_repository_policy = false
   repository_read_write_access_arns = var.push_principals
   repository_read_access_arns       = var.pull_principals
   repository_lifecycle_policy       = var.lifecycle_policy

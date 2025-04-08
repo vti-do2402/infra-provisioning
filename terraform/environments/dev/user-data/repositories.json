@@ -1,0 +1,26 @@
+{
+  "api_gateway": {
+    "name": "api-gateway",
+    "tags": {
+      "Service": "api-gateway"
+    }
+  },
+  "backend_service": {
+    "name": "backend-service",
+    "tags": {
+      "Service": "backend-service"
+    }
+  },
+  "ui_service": {
+    "name": "ui-service",
+    "tags": {
+      "Service": "ui-service"
+    }
+  },
+  "database_service": {
+    "name": "database-service",
+    "tags": {
+      "Service": "database-service"
+    }
+  }
+}

@@ -13,32 +13,6 @@ locals {
   ]
 
   bucket_config = {
-    // Bucket for storing CI/CD artifacts
-    artifacts = {
-      bucket_name         = "${local.prefix}-artifacts"
-      enable_versioning   = true
-      sse_algorithm       = "AES256"
-      block_public_access = true
-      lifecycle_rules = [
-        {
-          id      = "ci-artifacts"
-          enabled = true
-          prefix  = "artifacts/"
-          filter = [{
-            tags = {
-              Role = "cicd"
-            }
-          }]
-          transition = local.transition_rules
-          expiration = {
-            days = 90
-          }
-        }
-      ]
-      tags = {
-        Role = "cicd"
-      }
-    }
     // Bucket for storing private keys
     private_key = {
       bucket_name         = "${local.prefix}-private-key"

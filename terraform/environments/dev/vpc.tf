@@ -4,7 +4,10 @@ locals {
   private_subnets  = [for i, az in local.azs : cidrsubnet(var.vpc_cidr, 8, i + 10)]
   database_subnets = [for i, az in local.azs : cidrsubnet(var.vpc_cidr, 8, i + 20)]
   intra_subnets    = [for i, az in local.azs : cidrsubnet(var.vpc_cidr, 8, i + 30)]
+
+  aws_account_id = data.aws_caller_identity.current.account_id
 }
+
 module "networking" {
   source = "../../modules/networking"
 
@@ -44,3 +47,12 @@ module "networking" {
 
   tags = local.tags
 }
+
+module "iam" {
+  source = "../../modules/iam"
+
+  aws_account_id = local.aws_account_id
+  iam_role       = "github-actions-role"
+  aws_region     = var.aws_region
+}
+
