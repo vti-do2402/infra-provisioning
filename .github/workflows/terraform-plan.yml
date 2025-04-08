@@ -2,9 +2,11 @@ name: Terraform Plan on PR
 
 on:
   pull_request:
-    types: [opened, reopened]
+    types: [opened, synchronize, reopened]
     branches:
       - main
+    paths:
+      - terraform/**
 
 jobs:
   terraform-plan:
