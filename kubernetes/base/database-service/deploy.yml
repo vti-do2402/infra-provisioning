@@ -36,10 +36,11 @@ spec:
               value: "8081"
             - name: HOSTNAME
               value: mock-project-database-service
-          envFrom:
-            - secretRef:
-                name: mock-project-database-secret
-                key: MONGODB_URI
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mock-project-database-secret
+                  key: MONGODB_URI
           resources:
             limits:
               cpu: 500m
