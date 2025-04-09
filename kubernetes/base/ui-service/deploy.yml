@@ -33,7 +33,7 @@ spec:
               name: ui-port
           env:
             - name: API_URL
-              value: http://mock-project-api-gateway:8080
+              value: http://mock-project-api-gateway.default.svc.cluster.local:8080
             - name: PORT
               value: "3000"
             - name: HOSTNAME

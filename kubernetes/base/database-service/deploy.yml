@@ -4,11 +4,9 @@ metadata:
   name: mock-project-database-service
   labels:
     quentindev.io/name: mock-project-database-service
-    app.kubernetes.io/instance: mock-project
     app.kubernetes.io/component: database-service
     app.kubernetes.io/name: mock-project-database-service
     app.kubernetes.io/version: "1.0.0"
-    app.kubernetes.io/part-of: mock-project
 spec:
   replicas: 1
   revisionHistoryLimit: 10
@@ -41,6 +39,7 @@ spec:
                 secretKeyRef:
                   name: mock-project-database-secret
                   key: MONGODB_URI
+
           resources:
             limits:
               cpu: 500m

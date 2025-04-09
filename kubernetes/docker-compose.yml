@@ -7,12 +7,6 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=password
       - MONGO_INITDB_DATABASE=mock-project
-    healthcheck:
-      test: ["CMD", "mongo", "admin", "--eval", "db.stats()"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
 
   mongo-express:
     image: mongo-express
@@ -37,7 +31,11 @@ services:
     environment:
       - SERVER_PORT=8081
       - DATABASE_PORT=27017
-      - MONGODB_URI=mongodb://admin:password@mongo:27017/mock-project?authSource=admin
+      - MONGODB_HOST=mongo
+      - MONGODB_PORT=27017
+      - MONGODB_DATABASE=mock-project
+      - MONGODB_USERNAME=admin
+      - MONGODB_PASSWORD=password
     depends_on:
       - mongo
 

@@ -11,3 +11,29 @@ resources:
   - api-gateway/deploy.yml
   - ui-service/deploy.yml
   - ingress.yml
+
+commonLabels:
+  app.kubernetes.io/instance: mock-project
+  app.kubernetes.io/part-of: mock-project
+
+configMapGenerator:
+  - name: mock-project-config
+    literals:
+      - API_URL=http://mock-project-api-gateway:8080
+      - DATABASE_SERVICE_URL=http://mock-project-database-service:8081
+      - BACKEND_SERVICE_URL=http://mock-project-backend-service:8082
+      - UI_SERVICE_URL=http://mock-project-ui-service:8083
+      - MONGODB_HOST=<PRIVATE_IP>
+      - MONGODB_PORT=27017
+      - INGRESS_HOST=mock-project.quentindev.io
+
+secretGenerator:
+  - name: mock-project-database-secret
+    literals:
+      # admin:password
+      - MONGODB_USERNAME=YWRtaW4K
+      - MONGODB_PASSWORD=cGFzc3dvcmQK
+      - MONGODB_URI=mongodb://admin:password@<PRIVATE_IP>:27017/mock-project?authSource=admin
+
+namespace: mock-project
+namePrefix: mock-project-

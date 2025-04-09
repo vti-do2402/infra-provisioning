@@ -1,14 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mock-project-api-gateway
+  name: api-gateway
   labels:
     quentindev.io/name: mock-project-api-gateway
-    app.kubernetes.io/instance: mock-project
     app.kubernetes.io/component: api-gateway
     app.kubernetes.io/name: mock-project-api-gateway
     app.kubernetes.io/version: "1.0.0"
-    app.kubernetes.io/part-of: mock-project
 spec:
   replicas: 1
   revisionHistoryLimit: 10

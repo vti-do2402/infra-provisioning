@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mock-project-backend-service
+  name: backend-service
   labels:
     quentindev.io/name: mock-project-backend-service
     app.kubernetes.io/instance: mock-project
